@@ -1,0 +1,127 @@
+CREATE DATABASE empresa;
+USE empresa;
+
+CREATE TABLE TB_PESSOA(
+	PES_ID INT PRIMARY KEY AUTO_INCREMENT,
+    PES_NOME VARCHAR(250) NOT NULL,
+    PES_SEXO varchar(2) NOT NULL
+);
+
+CREATE TABLE TB_SETOR(
+	SET_ID INT PRIMARY KEY AUTO_INCREMENT,
+    SET_NOME VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE TB_PESSOA_SETOR(
+	PES_ID INT NOT NULL,
+    SET_ID INT NOT NULL,
+	CONSTRAINT FK_PES_ID FOREIGN KEY (PES_ID)
+    REFERENCES TB_PESSOA(PES_ID),
+    CONSTRAINT FK_SET_ID FOREIGN KEY (SET_ID)
+    REFERENCES TB_SETOR (SET_ID)
+);
+
+#INSERINDO VALUES EM TB_PESSOA
+INSERT INTO TB_PESSOA (PES_NOME, PES_SEXO) VALUES("Aurelino Carlos Souza Ferreira", "M");
+INSERT INTO TB_PESSOA (PES_NOME, PES_SEXO) VALUES("Louríval Magalhães", "M");
+INSERT INTO TB_PESSOA (PES_NOME, PES_SEXO) VALUES("Inês Correia Souza", "F");
+INSERT INTO TB_PESSOA (PES_NOME, PES_SEXO) VALUES("Magno Pires","M");
+INSERT INTO TB_PESSOA (PES_NOME, PES_SEXO) VALUES("Caroline Califórnia","F");
+INSERT INTO TB_PESSOA (PES_NOME, PES_SEXO) VALUES("Bárbara Lima","F");
+INSERT INTO TB_PESSOA (PES_NOME, PES_SEXO) VALUES("Jocelyn Pinheiro Souza","F");
+
+#INSERINDO VALUES EM TB_SETOR
+INSERT INTO TB_SETOR (SET_NOME) VALUES ("Pesquisa");
+INSERT INTO TB_SETOR (SET_NOME) VALUES ("Desenvolvimento");
+INSERT INTO TB_SETOR (SET_NOME) VALUES ("Qualidade");
+INSERT INTO TB_SETOR (SET_NOME) VALUES ("Administrativo"); 
+
+#CRIANDO TABELA DE RELACIONAMENTO ENTRE TB_PESSOA E TB_SETOR
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (1, 1);
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (2, 1);
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (3, 2);
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (4, 3);
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (5, 2);
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (6, 3);
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (7, 4);
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (2, 2);
+INSERT INTO TB_PESSOA_SETOR (PES_ID, SET_ID) VALUES (1, 2);
+
+#SELECTS
+SELECT * FROM TB_PESSOA;
+SELECT * FROM TB_SETOR;
+SELECT * FROM TB_PESSOA_SETOR;
+
+#SELECIONANDO PESSOAS QUE POSSUE "Souza" NO NOME
+SELECT * FROM TB_PESSOA
+WHERE PES_NOME LIKE "%Souza%";
+
+# SELECIONANDO PESSOA E SETOR E ORDENANDO POR PES_ID
+SELECT * FROM TB_PESSOA_SETOR JOIN TB_PESSOA USING(PES_ID) JOIN TB_SETOR USING(SET_ID) ORDER BY PES_ID;
+
+# SELECIONANDO PESSOA E SETOR E ORDENANDO POR SET_ID
+SELECT * FROM TB_PESSOA_SETOR JOIN TB_PESSOA USING(PES_ID) JOIN TB_SETOR USING(SET_ID) ORDER BY SET_ID;
+
+#SELECIONADO PESSOA E SETOR SEM  MOSTRAR AS CHAVES ESTRANGEIRAS EM TB_PESSOA_SETOR E ORDENANDO POR PES_ID DE TB_PESSOA
+SELECT PES_ID, PES_NOME, PES_SEXO, SET_NOME FROM TB_PESSOA_SETOR
+JOIN TB_PESSOA USING(PES_ID) JOIN TB_SETOR USING(SET_ID) ORDER BY PES_ID;
+
+
+/*01 - Criar uma consulta que retorne todas as pessoas do sexo feminino (1,0)*/
+
+SELECT * FROM TB_PESSOA
+WHERE TB_PESSOA.PES_SEXO = "F";
+
+/*02 - Crie um comando para inserir uma pessoa (1,0)*/
+
+INSERT INTO TB_PESSOA (PES_NOME, PES_SEXO) VALUES ("Luan", "M");
+
+/*03 - Crie um comando que exclua todos os homens dos seus respectivos setores (1,0)*/
+
+DELETE FROM TB_PESSOA_SETOR
+WHERE PES_ID IN (SELECT PES_ID FROM TB_PESSOA WHERE PES_SEXO = "M") AND PES_ID >= 0;
+
+
+/*04 - Criar um comando para inserir o sobrenome “Freire” no nome de todas as pessoas
+que contêm “Souza” (1,0)*/
+
+UPDATE TB_PESSOA SET PES_NOME = CONCAT(PES_NOME, " Freire")
+WHERE PES_NOME LIKE "%Souza%" AND PES_ID >= 0; 
+
+
+/*05 -Criar uma consulta que retorne o número de setores que cada pessoa trabalha (1,0)*/
+SELECT PES_NOME, (SELECT COUNT(*) FROM TB_PESSOA_SETOR WHERE PES_ID = TB_PESSOA.PES_ID) 
+AS "Qt setores" FROM TB_PESSOA;
+
+
+/*06 - Criar uma consulta que retorne as pessoas que atuam em mais de um setor (1,0)*/
+SELECT PES_NOME FROM TB_PESSOA WHERE (SELECT COUNT(*) FROM TB_PESSOA_SETOR WHERE PES_ID = TB_PESSOA.PES_ID) > 1;
+
+/*07 - Criar uma consulta que retorne os setores que possuem menos de 3 pessoas. (1,0)*/
+
+
+
+/*
+08 - Defina as vantagens, desvantagens e aplicação das seguintes técnicas de geração
+de valores para chaves primárias: (1,0)
+a) Select MAX(Chave_ID) + 1 ...
+	Para aplicações que oferecem conecções simultâneas o uso de MAX(id) +1
+    pode gerar erro de violação de constraints pois é sequêncial e
+    aplicações simultâneas exigem soluções assíncronas.
+ 
+b) Autoinc, Generator, Sequence,…
+
+c)GUID
+	É utilizado na criação de registros globais únicos para tabelas, banco de dados e servidores.
+    A vantagem é que isso possibilita a integração dos dados sem erro de violação de constraints
+    pois cada tabela tem um registro global único. Cada id global possui 16 bytes e isso irá exitir
+    mais espaço de armazenamento.
+
+*/
+
+SHOW Tables;
+DESCRIBE TB_PESSOA;
+
+DROP TABLE TB_PESSOA_SETOR;
+DROP TABLE TB_PESSOA;
+DROP TABLE TB_SETOR;
