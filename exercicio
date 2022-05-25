@@ -98,7 +98,7 @@ AS "Qt setores" FROM TB_PESSOA;
 SELECT PES_NOME FROM TB_PESSOA WHERE (SELECT COUNT(*) FROM TB_PESSOA_SETOR WHERE PES_ID = TB_PESSOA.PES_ID) > 1;
 
 /*07 - Criar uma consulta que retorne os setores que possuem menos de 3 pessoas. (1,0)*/
-
+SELECT SET_NOME FROM TB_SETOR WHERE (SELECT COUNT(*) FROM TB_PESSOA_SETOR WHERE SET_ID = TB_SETOR.SET_ID) < 3;
 
 
 /*
