@@ -307,6 +307,7 @@ COMMIT;
 
 
 
+
 SELECT * FROM categorias;
 
 SELECT * FROM clientes;
@@ -326,4 +327,11 @@ SELECT * FROM pedidos;
 SELECT * FROM pedidos_item;
 
 SELECT * FROM pedidos_status;
+
+SELECT * FROM produtos;
+
+SELECT * FROM transportadoras;
+
+
+
 
